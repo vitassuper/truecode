@@ -22,3 +22,27 @@ export function editPost(id, data){
     })
 }
 
+export function getPost(id){
+    return new Promise((res, rej)=>{
+        axios.get("/api/v1/posts/" + id)
+        .then((resp) =>{
+            res(resp.data);
+        })
+        .catch((err)=> {
+            rej("Невозможно получить данные о посте");
+        });
+    })
+}
+
+export function getPosts(page){
+    return new Promise((res, rej)=>{
+        axios
+        .get("/api/v1/posts?page=" + page)
+        .then((resp)=> {
+            res(resp.data);
+        })
+        .catch((err)=> {
+            rej("Невозможно получить записи");
+        });
+    })
+}

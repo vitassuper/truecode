@@ -1,7 +1,7 @@
 <template>
   <div class="container mb-3">
-    <div class="d-flex justify-content-between">
-        <img v-bind:src="url" style="max-width:100px;" />
+    <div class="d-flex justify-content-between align-items-center">
+        <router-link :to="{name: 'home'}"><img v-bind:src="url" style="max-width:100px;" /></router-link>
         <Menu></Menu>
       <Auth></Auth>
     </div>
@@ -30,7 +30,6 @@ export default {
       axios
         .get("/api/v1/header?type=logo")
         .then((resp)=> {
-            console.log(resp.data);
             this.url=resp.data;
         })
         .catch((resp) =>{
@@ -40,6 +39,5 @@ export default {
    }
 };
 </script>
-
 <style>
 </style>

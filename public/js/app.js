@@ -1892,7 +1892,6 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       axios.get("/api/v1/header?type=logo").then(function (resp) {
-        console.log(resp.data);
         _this.url = resp.data;
       })["catch"](function (resp) {
         console.log(resp);
@@ -1912,6 +1911,8 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
 //
 //
 //
@@ -1946,16 +1947,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      active: "home"
+      active: ""
     };
-  },
-  methods: {
-    makeActive: function makeActive(item) {
-      this.active = item;
-    },
-    isActive: function isActive(item) {
-      return this.active === item;
-    }
   }
 });
 
@@ -2042,24 +2035,24 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
+
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     var _this = this;
 
-    var id = this.$route.params.id;
-    this.postId = id;
-    axios.get("/api/v1/posts/" + id).then(function (resp) {
-      _this.post = resp.data;
-    })["catch"](function () {
-      alert("Could not load your company");
+    Object(_helpers_posts__WEBPACK_IMPORTED_MODULE_0__["getPost"])(this.$route.params.id).then(function (resp) {
+      _this.$store.commit("editPostSuccess", resp);
+
+      _this.posts = resp;
+    })["catch"](function (error) {
+      _this.$store.commit("editPostError", {
+        error: error
+      });
     });
   },
   data: function data() {
     return {
-      postId: null,
       posts: {
         title: ""
       }
@@ -2069,7 +2062,7 @@ __webpack_require__.r(__webpack_exports__);
     saveForm: function saveForm() {
       var _this2 = this;
 
-      Object(_helpers_posts__WEBPACK_IMPORTED_MODULE_0__["editPost"])(this.postId, this.posts).then(function (resp) {
+      Object(_helpers_posts__WEBPACK_IMPORTED_MODULE_0__["editPost"])(this.$route.params.id, this.posts).then(function (resp) {
         _this2.$store.commit("editPostSuccess", resp);
 
         _this2.$router.replace("/posts");
@@ -2121,6 +2114,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2147,24 +2141,29 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     getPosts: function getPosts(page) {
-      var app = this;
-      axios.get("/api/v1/posts?page=" + page).then(function (resp) {
-        for (var i in resp.data.data) {
-          app.posts.push(resp.data.data[i]);
+      var _this2 = this;
+
+      Object(_helpers_posts__WEBPACK_IMPORTED_MODULE_0__["getPosts"])(page).then(function (resp) {
+        _this2.$store.commit("getPostSuccess", resp);
+
+        for (var i in resp.data) {
+          _this2.posts.push(resp.data[i]);
         }
-      })["catch"](function (resp) {
-        console.log(resp);
+      })["catch"](function (error) {
+        _this2.$store.commit("getPostError", {
+          error: error
+        });
       });
     },
     deleteEntry: function deleteEntry(id, index) {
-      var _this2 = this;
+      var _this3 = this;
 
       Object(_helpers_posts__WEBPACK_IMPORTED_MODULE_0__["deletePost"])(id).then(function (resp) {
-        _this2.$store.commit("deletePostSuccess", resp);
+        _this3.$store.commit("deletePostSuccess", resp);
 
-        _this2.posts.splice(index, 1);
+        _this3.posts.splice(index, 1);
       })["catch"](function (error) {
-        _this2.$store.commit("deletePostError", {
+        _this3.$store.commit("deletePostError", {
           error: error
         });
       });
@@ -6658,7 +6657,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "\n.actveitem {\r\n  color: green;\n}\r\n", ""]);
+exports.push([module.i, "\n.activem {\r\n  color: green;\n}\r\n", ""]);
 
 // exports
 
@@ -38433,12 +38432,14 @@ var render = function() {
   return _c("div", { staticClass: "container mb-3" }, [
     _c(
       "div",
-      { staticClass: "d-flex justify-content-between" },
+      { staticClass: "d-flex justify-content-between align-items-center" },
       [
-        _c("img", {
-          staticStyle: { "max-width": "100px" },
-          attrs: { src: _vm.url }
-        }),
+        _c("router-link", { attrs: { to: { name: "home" } } }, [
+          _c("img", {
+            staticStyle: { "max-width": "100px" },
+            attrs: { src: _vm.url }
+          })
+        ]),
         _vm._v(" "),
         _c("Menu"),
         _vm._v(" "),
@@ -38470,9 +38471,18 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("h1", [_vm._v("Home page")])
+  return _vm._m(0)
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "container" }, [
+      _c("h1", [_vm._v("Home page")])
+    ])
+  }
+]
 render._withStripped = true
 
 
@@ -38497,22 +38507,11 @@ var render = function() {
   return _c("ul", { staticClass: "nav" }, [
     _c(
       "li",
-      {
-        staticClass: "nav-item",
-        on: {
-          click: function($event) {
-            return _vm.makeActive("home")
-          }
-        }
-      },
+      { staticClass: "nav-item" },
       [
         _c(
           "router-link",
-          {
-            staticClass: "nav-link",
-            class: { actveitem: _vm.isActive("home") },
-            attrs: { to: { name: "home" } }
-          },
+          { staticClass: "nav-link", attrs: { to: { name: "home" } } },
           [_vm._v("Home")]
         )
       ],
@@ -38521,22 +38520,11 @@ var render = function() {
     _vm._v(" "),
     _c(
       "li",
-      {
-        staticClass: "nav-item",
-        on: {
-          click: function($event) {
-            return _vm.makeActive("about")
-          }
-        }
-      },
+      { staticClass: "nav-item" },
       [
         _c(
           "router-link",
-          {
-            staticClass: "nav-link",
-            class: { actveitem: _vm.isActive("about") },
-            attrs: { to: { name: "postItem" } }
-          },
+          { staticClass: "nav-link", attrs: { to: { name: "postItem" } } },
           [_vm._v("About us")]
         )
       ],
@@ -38545,22 +38533,11 @@ var render = function() {
     _vm._v(" "),
     _c(
       "li",
-      {
-        staticClass: "nav-item",
-        on: {
-          click: function($event) {
-            return _vm.makeActive("contacts")
-          }
-        }
-      },
+      { staticClass: "nav-item" },
       [
         _c(
           "router-link",
-          {
-            staticClass: "nav-link",
-            class: { actveitem: _vm.isActive("contacts") },
-            attrs: { to: { name: "postItem" } }
-          },
+          { staticClass: "nav-link", attrs: { to: { name: "postCreate" } } },
           [_vm._v("Contacts")]
         )
       ],
@@ -38692,49 +38669,47 @@ var render = function() {
         [_vm._v("Back")]
       ),
       _vm._v(" "),
-      _c("div", [
-        _c(
-          "form",
-          {
-            on: {
-              submit: function($event) {
-                $event.preventDefault()
-                return _vm.saveForm()
-              }
+      _c(
+        "form",
+        {
+          on: {
+            submit: function($event) {
+              $event.preventDefault()
+              return _vm.saveForm()
             }
-          },
-          [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col-xs-12 form-group" }, [
-                _c("label", [_vm._v("Title")]),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.posts.title,
-                      expression: "posts.title"
-                    }
-                  ],
-                  attrs: { type: "text" },
-                  domProps: { value: _vm.posts.title },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(_vm.posts, "title", $event.target.value)
-                    }
+          }
+        },
+        [
+          _c("div", { staticClass: "row" }, [
+            _c("div", { staticClass: "col-xs-12 form-group" }, [
+              _c("label", [_vm._v("Title")]),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.posts.title,
+                    expression: "posts.title"
                   }
-                }),
-                _vm._v(" "),
-                _c("button", [_vm._v("Submit")])
-              ])
+                ],
+                attrs: { type: "text" },
+                domProps: { value: _vm.posts.title },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(_vm.posts, "title", $event.target.value)
+                  }
+                }
+              }),
+              _vm._v(" "),
+              _c("button", [_vm._v("Submit")])
             ])
-          ]
-        )
-      ]),
+          ])
+        ]
+      ),
       _vm._v(" "),
       _vm.postError ? _c("div", [_vm._v(_vm._s(_vm.postError))]) : _vm._e()
     ],
@@ -54752,6 +54727,7 @@ window.Vue.use(vue_router__WEBPACK_IMPORTED_MODULE_0__["default"]);
 window.Vue.use(vuex__WEBPACK_IMPORTED_MODULE_3__["default"]);
 var store = new vuex__WEBPACK_IMPORTED_MODULE_3__["default"].Store(_store__WEBPACK_IMPORTED_MODULE_4__["default"]);
 var router = new vue_router__WEBPACK_IMPORTED_MODULE_0__["default"]({
+  linkExactActiveClass: "activem",
   mode: 'history',
   routes: _routes__WEBPACK_IMPORTED_MODULE_2__["routes"]
 });
@@ -55575,6 +55551,10 @@ function getLocalUser() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initialize", function() { return initialize; });
 function initialize(store, router) {
+  if (!!store.state.currentUser && store.state.currentUser.expires_in < Math.round(Date.now() / 1000)) {
+    store.commit('logout');
+  }
+
   router.beforeEach(function (to, from, next) {
     var requiresAuth = to.matched.some(function (record) {
       return record.meta.requiresAuth;
@@ -55590,7 +55570,7 @@ function initialize(store, router) {
     }
   });
   axios.interceptors.response.use(null, function (error) {
-    if (error.resposne.status == 401) {
+    if (error.response.status == 401) {
       store.commit('logout');
       router.push('/auth/login');
     }
@@ -55610,13 +55590,15 @@ function initialize(store, router) {
 /*!***************************************!*\
   !*** ./resources/js/helpers/posts.js ***!
   \***************************************/
-/*! exports provided: deletePost, editPost */
+/*! exports provided: deletePost, editPost, getPost, getPosts */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deletePost", function() { return deletePost; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "editPost", function() { return editPost; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getPost", function() { return getPost; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getPosts", function() { return getPosts; });
 function deletePost(id) {
   return new Promise(function (res, rej) {
     axios["delete"]("/api/v1/posts/" + id).then(function (resp) {
@@ -55632,6 +55614,24 @@ function editPost(id, data) {
       res(resp.data);
     })["catch"](function (err) {
       rej("Невозможно обновить");
+    });
+  });
+}
+function getPost(id) {
+  return new Promise(function (res, rej) {
+    axios.get("/api/v1/posts/" + id).then(function (resp) {
+      res(resp.data);
+    })["catch"](function (err) {
+      rej("Невозможно получить данные о посте");
+    });
+  });
+}
+function getPosts(page) {
+  return new Promise(function (res, rej) {
+    axios.get("/api/v1/posts?page=" + page).then(function (resp) {
+      res(resp.data);
+    })["catch"](function (err) {
+      rej("Невозможно получить записи");
     });
   });
 }
@@ -55733,6 +55733,8 @@ var user = Object(_helpers_auth__WEBPACK_IMPORTED_MODULE_0__["getLocalUser"])();
       state.isLoggedIn = true;
       state.currentUser = Object.assign({}, playload.user, {
         user_role: playload.user_role
+      }, {
+        expires_in: playload.expires_in
       });
       localStorage.setItem("user", JSON.stringify(state.currentUser));
       var token = state.currentUser.api_token;
@@ -55762,6 +55764,12 @@ var user = Object(_helpers_auth__WEBPACK_IMPORTED_MODULE_0__["getLocalUser"])();
       state.post_error = playload.error;
     },
     editPostSuccess: function editPostSuccess(state, playload) {
+      state.post_error = null;
+    },
+    getPostError: function getPostError(state, playload) {
+      state.post_error = playload.error;
+    },
+    getPostSuccess: function getPostSuccess(state, playload) {
       state.post_error = null;
     }
   }

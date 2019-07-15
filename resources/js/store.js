@@ -25,7 +25,7 @@ export default {
         loginSuccess(state, playload) {
             state.auth_error = null;
             state.isLoggedIn = true;
-            state.currentUser = Object.assign({},playload.user, {user_role:playload.user_role});
+            state.currentUser = Object.assign({},playload.user, {user_role:playload.user_role}, {expires_in:playload.expires_in});
             localStorage.setItem("user", JSON.stringify(state.currentUser));
             const token = state.currentUser.api_token;
             axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -54,6 +54,12 @@ export default {
             state.post_error=playload.error;
         },
         editPostSuccess(state, playload){
+            state.post_error=null;
+        },
+        getPostError(state, playload){
+            state.post_error=playload.error;
+        },
+        getPostSuccess(state, playload){
             state.post_error=null;
         }
     }

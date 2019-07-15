@@ -21,6 +21,7 @@
 
 <script>
 import { deletePost } from "../../helpers/posts";
+import {getPosts} from "../../helpers/posts";
 
 export default {
   data: function() {
@@ -45,16 +46,14 @@ export default {
   },
   methods: {
     getPosts(page) {
-      var app = this;
-      axios
-        .get("/api/v1/posts?page=" + page)
-        .then(function(resp) {
-          for (var i in resp.data.data) {
-            app.posts.push(resp.data.data[i]);
+        getPosts(page).then((resp)=>{
+          this.$store.commit("getPostSuccess", resp);
+           for (var i in resp.data) {
+            this.posts.push(resp.data[i]);
           }
         })
-        .catch(function(resp) {
-          console.log(resp);
+        .catch((error)=> {
+          this.$store.commit("getPostError", {error});
         });
     },
     deleteEntry(id, index) {
