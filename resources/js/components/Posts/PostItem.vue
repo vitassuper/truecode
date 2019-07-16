@@ -7,6 +7,7 @@
       <div v-for="(post, index) in posts" style="margin-bottom:100px;">
         <div class="card">
           <div class="card-header">{{post.title}}</div>
+          <div v-if="post.image"><img :src="post.image.url"></div>
           <div class="card-body">{{post.description}}</div>
           <div v-if="currentUser && currentUser.user_role=='admin'" class="col-2">
             <a class="btn btn-xs btn-danger" v-on:click.prevent="deleteEntry(post.id, index)">Delete</a>
