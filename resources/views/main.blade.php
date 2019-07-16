@@ -10,7 +10,6 @@
    
 </head>
 <body>
- 
 <div id="app">
 <headercomp></headercomp>
 <router-view></router-view>

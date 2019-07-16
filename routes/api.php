@@ -21,6 +21,8 @@ Route::group(['prefix' => '/v1', 'namespace' => 'Api\v1\Header', 'as'=>'api'],fu
     Route::get('/header', 'HeaderController@index');
 });
 
+
+
 Route::group(['prefix' => 'auth', 'namespace' => 'Api\v1', 'as'=>'api'],function(){
 Route::post('/register', 'AuthController@register');
 Route::post('/login', 'AuthController@login');
@@ -30,6 +32,6 @@ Route::post('/logout', 'AuthController@logout');
 
 Route::group(['prefix' =>'/v1', 'namespace' => 'Api\v1', 'as'=>'api'],function(){
     Route::resource('posts','PostsController', ['except'=>['create', 'edit']]);
-
+    Route::resource('images', 'ImageController', ['except'=>['create', 'edit']]);
 
 });

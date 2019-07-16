@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Api\v1;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\DB;
+use App\Posts;
+
 
 
 class PostsController extends Controller
@@ -21,7 +22,7 @@ class PostsController extends Controller
      */
     public function index()
     {
-        $posts = DB::table('posts')->orderByRaw('id DESC')->paginate(7);
+        $posts = Posts::latest()->with(['image:id,url'])->paginate(7);
         return $posts;
     }
 
