@@ -44,5 +44,5 @@ export function getPosts(page){
         .catch((err)=> {
             rej("Невозможно получить записи");
         });
-    })
+    });
 }

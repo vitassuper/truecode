@@ -45,7 +45,7 @@ class PostsController extends Controller
      */
     public function show($id)
     {
-        return \App\Posts::findOrFail($id);
+        return \App\Posts::where('id', $id)->with(['image:id,url'])->first();
     }
 
     /**

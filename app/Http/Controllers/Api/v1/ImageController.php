@@ -10,9 +10,8 @@ use App\Http\Helpers\ImageProcessor;
 class ImageController extends Controller
 {
 
-    public function index()
-    {
-        
+    public function index(){
+        return \App\Images::latest()->paginate(1);
     }
 
     public function store(Request $request, ImageProcessor $imageProcessor){

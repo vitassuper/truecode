@@ -42,7 +42,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only('login', 'password');
-        if ($token = auth()->setTTL(2)->attempt($credentials)) {
+        if ($token = auth()->setTTL(100)->attempt($credentials)) {
             $this->guard()->user()->api_token = $token;
             $role = \App\User::with(['role' => function ($query) {
                 $query->select(['id', 'public_name']);
