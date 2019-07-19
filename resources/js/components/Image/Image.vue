@@ -5,11 +5,14 @@
         <div class="modal-container">
           <div class="modal-body">
             <div class="d-flex align-items-center">
-              <div v-for="image in images.data">
-                <img :src="image.url" />
+              <div v-for="image, index in images.data">
+                <img :src="image.url" class="w-30"/>
+                <button class="icon-delete" v-on:click.prevent="deleteImage(image.id, index)">
+                  <i class="far fa-times-circle text-danger"></i>
+                </button>
               </div>
-              <button v-on:click="getImages(5)">Next</button>
             </div>
+            <Pagination :total="images.last_page" @page-changed="getImages" :current="currentPage"></Pagination>
           </div>
           <div class="modal-footer">
             <form v-on:submit.prevent="uploadImage">
@@ -25,18 +28,21 @@
 </template>
 
 <script>
+import Pagination from "../Pagination";
 export default {
   data: function() {
     return {
-      images: {
-        url: ""
-      },
+      images: [],
       imgFile: {
         type: "local",
         width: "300",
         height: "300"
       },
+      currentPage: 1
     };
+  },
+  components: {
+    Pagination
   },
   mounted() {
     this.getImages(1);
@@ -44,9 +50,10 @@ export default {
   methods: {
     getImages(page) {
       axios
-        .get("/api/v1/images?page=" +page)
+        .get("/api/v1/images?page=" + page)
         .then(resp => {
           this.images = resp.data;
+          this.currentPage = page;
         })
         .catch(err => {
           rej("Невозможно получить записи");
@@ -64,8 +71,16 @@ export default {
             "Content-Type": "multipart/form-data"
           }
         })
+        .then(resp => {})
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    deleteImage(id, index){
+      axios
+        .delete("/api/v1/images/" + id)
         .then(resp => {
-          
+           this.images.data.splice(index, 1);
         })
         .catch(err => {
           console.log(err);
@@ -76,6 +91,13 @@ export default {
 </script>
 
 <style>
+.icon-delete {
+  font-size: 3rem;
+  position: relative;
+  top: 80px;
+  right: 25px;
+}
+
 .modal-mask {
   position: fixed;
   z-index: 9998;

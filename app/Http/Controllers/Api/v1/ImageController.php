@@ -11,7 +11,7 @@ class ImageController extends Controller
 {
 
     public function index(){
-        return \App\Images::latest()->paginate(1);
+        return \App\Images::latest()->paginate(4);
     }
 
     public function store(Request $request, ImageProcessor $imageProcessor){
@@ -50,6 +50,16 @@ class ImageController extends Controller
 
     public function destroy($id)
     {
-        
+        $image = \App\Images::findOrFail($id);
+        if ($image->type == 'remote') {
+            $image->delete();
+        }
+        else if ($image->type == 'local') {
+            $image->delete();
+            try {
+                unlink(public_path($image->url));
+            }
+            catch(Exception $ex) {}
+        }
     }
 }
